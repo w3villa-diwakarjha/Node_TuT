@@ -1,41 +1,28 @@
-// const {MongoClient}= require('mongodb')
-// const mongodb= require('./mongodb')
-
-// const main=async ()=>{
-//     let data= await mongodb();
-//     data= await data.find().toArray();
-//     console.log(data);
-// }
-
-// main();
-
-
-const express=require('express')
-const app=express();
+const express =require('express')
 const config= require('./config')
-const products=require('./product')
+const product= require('./product')
+const app=express();
 
 app.use(express.json())
 
-app.post('/',async (req,res)=>{
-    let data=await new products(req.body);
-    let result=await data.save();
-    console.log(result)
-    res.send(result)
-})
-app.get('/list',async (req,res)=>{
-    let data=await products.find();
-    console.log(data)
+app.get('/search/:key',async (req,res)=>{
+    console.log(req.params)
+    let data=await product.find(
+        {
+            "$or":[
+                {
+                    "name": {$regex: req.params.key}
+                },
+                {
+                    "brand": {$regex: req.params.key}
+                },
+                {
+                    "category": {$regex: req.params.key}
+                }
+            ]
+        }
+    );
     res.send(data);
 })
-app.delete('/delete/:_id', async (req,res)=>{
-    console.log(req.params)
-    let data=await products.deleteOne(req.params)
-    res.send(data)
-})
-app.put('/update/:_id',async (req,res)=>{
-    console.log(req.params)
-    let data= await products.updateOne({_id: req.params}, {$set: req.body})
-    res.send(data)
-})
+
 app.listen(5000);
