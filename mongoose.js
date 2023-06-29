@@ -6,7 +6,7 @@ const productSchema = new mongoose.Schema({
     name: String,
     price: Number,
     brand: String,
-    // category: String
+    category: String
 })
 
 const saveInDB=async ()=>{
